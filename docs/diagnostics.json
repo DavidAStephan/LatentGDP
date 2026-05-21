@@ -1,12 +1,12 @@
 {
-  "run_time_utc": "2026-05-21 09:21:58",
+  "run_time_utc": "2026-05-21 10:43:10",
   "cmdstan_version": "2.39.0",
   "T": 265,
   "sample_start": "1959-12-01",
   "sample_end": "2025-12-01",
-  "num_divergent": 4,
+  "num_divergent": 20,
   "num_max_treedepth": 0,
-  "ebfmi_min": 0.246,
+  "ebfmi_min": 0.182,
   "chains": 4,
   "iter_per_chain": 2000
 }
