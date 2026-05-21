@@ -87,6 +87,10 @@ html <- sprintf('<!doctype html>
     td:first-child { color: #666; }
     img { max-width: 100%%; height: auto; display: block; margin: 1rem 0; }
     code { background: #eee; padding: 0.1rem 0.3rem; border-radius: 3px; }
+    .eq { background: #f7f7f7; border-left: 3px solid #c0c8d8;
+          padding: 0.5rem 0.9rem; margin: 0.5rem 0;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 0.92rem; white-space: pre-wrap; }
     a { color: #1f6feb; }
     footer { color: #888; font-size: 0.85rem; margin-top: 2rem;
              border-top: 1px solid #eee; padding-top: 1rem; }
@@ -133,6 +137,77 @@ html <- sprintf('<!doctype html>
     <li><a href="estimates_latest.json">estimates_latest.json</a> - latest quarter headline</li>
     <li><a href="diagnostics.json">diagnostics.json</a> - sampler diagnostics for the latest fit</li>
   </ul>
+
+  <h2>Model details</h2>
+
+  <p>The production model is m9: an AR(1) latent growth state observed
+  through three measurement equations, with stochastic volatility on
+  each measurement-error variance and a construction-based zero
+  restriction on the (E, I) vs P covariance.</p>
+
+  <h3>Observation equations</h3>
+  <p>At time t, the three observed ABS measures relate to latent growth
+  &mu;<sub>t</sub> via:</p>
+  <div class="eq">(y<sub>t</sub><sup>E</sup>, y<sub>t</sub><sup>I</sup>) | &mu;<sub>t</sub>  ~  MVN([&mu;<sub>t</sub>, &mu;<sub>t</sub>],  &Sigma;<sub>EI,t</sub>)
+y<sub>t</sub><sup>P</sup>           | &mu;<sub>t</sub>  ~  N(&mu;<sub>t</sub>, &sigma;<sub>P,t</sub><sup>2</sup>)</div>
+
+  <p>where &Sigma;<sub>EI,t</sub> has standard deviations
+  &sigma;<sub>E,t</sub>, &sigma;<sub>I,t</sub> on the diagonal and a
+  constant correlation &rho;<sub>EI</sub> off-diagonal. E and I share
+  &rho;<sub>EI</sub> because their measurement errors flow through the
+  same national-accounts balancing process. P is built from independent
+  industry value-added surveys, so
+  Cov(&epsilon;<sub>P</sub>, &epsilon;<sub>E</sub>) =
+  Cov(&epsilon;<sub>P</sub>, &epsilon;<sub>I</sub>) = 0 by construction
+  rather than by fit - this is the &quot;structural Sigma&quot; piece.</p>
+
+  <h3>Latent state</h3>
+  <p>Latent growth follows a stationary AR(1):</p>
+  <div class="eq">&mu;<sub>t</sub> = c + &rho; &middot; &mu;<sub>t-1</sub> + &eta;<sub>t</sub>,    &eta;<sub>t</sub> ~ N(0, &tau;<sup>2</sup>)
+&mu;<sub>1</sub> drawn from its stationary distribution.</div>
+
+  <h3>Stochastic volatility</h3>
+  <p>Each series&apos; log-variance is itself a stationary AR(1)
+  (Kim&ndash;Shephard&ndash;Chib parameterisation):</p>
+  <div class="eq">h<sub>k,t</sub> = &mu;<sub>h,k</sub> + &phi;<sub>k</sub> &middot; (h<sub>k,t-1</sub> - &mu;<sub>h,k</sub>) + &omega;<sub>k</sub> &middot; &xi;<sub>k,t</sub>
+&sigma;<sub>k,t</sub><sup>2</sup> = exp(h<sub>k,t</sub>)</div>
+
+  <p>This is what lets the COVID quarters get absorbed into
+  time-varying &sigma;<sub>k,t</sub> instead of distorting &mu;<sub>t</sub>.
+  The 1970s and mid-1990s also show elevated &sigma;<sub>k,t</sub> -
+  not just COVID.</p>
+
+  <h3>Priors</h3>
+  <p>Weakly informative, calibrated to Australian quarterly growth being
+  ~3%% trend with innovations of a few percentage points (annualised):</p>
+  <div class="eq">c           ~ N(1.5, 1)
+&rho;           ~ N(0.5, 0.3)    constrained to (-1, 1)
+&tau;           ~ half-N(0, 2)
+&mu;<sub>h,k</sub>         ~ N(2, 1)
+&phi;<sub>k</sub>          ~ Uniform(-1, 1)
+&omega;<sub>k</sub>          ~ half-N(0, 0.5)
+&rho;<sub>EI</sub>         ~ N(0, 0.5)    constrained to (-1, 1)</div>
+
+  <h3>Why this specification</h3>
+  <p>We fit 11 specifications (m1&ndash;m11) and compared them via LOO
+  cross-validation. Key findings:</p>
+  <ul>
+    <li>Adding SV to the baseline (m4 over m1/m2) buys ~240 elpd - the
+      single biggest improvement.</li>
+    <li>The structural restriction on &Sigma; alone (m6) costs ~3 elpd
+      vs baseline but cleanly identifies the E&ndash;I correlation
+      separately from the latent state.</li>
+    <li>m9 (= m6 + SV) wins another 6 elpd over m4 alone and fixes a
+      bimodal &phi;<sub>P</sub> posterior that m4 has - Production&apos;s
+      SV is now cleanly identified once cross-series covariance no
+      longer competes for explanation.</li>
+  </ul>
+
+  <p>Full research record (all 11 specs, including failed extensions like
+  m10 and the mixed-frequency m11) at
+  <a href="https://github.com/DavidAStephan/LatentGDP/blob/master/NOTES.md">NOTES.md</a>.
+  Stan source at
+  <a href="https://github.com/DavidAStephan/LatentGDP/blob/master/stan/m9_struct_sv.stan">stan/m9_struct_sv.stan</a>.</p>
 
   <footer>
     Last updated %s UTC. CmdStan %s. %d divergences out of %d draws.
