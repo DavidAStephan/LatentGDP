@@ -30,11 +30,21 @@ jobs:
           r-version: '4.4'
           use-public-rspm: true
 
+      # cmdstanr isn't on CRAN, so pak (used by setup-r-dependencies) can't
+      # resolve it. Install it directly from the stan-dev r-universe first.
+      - name: Install cmdstanr from r-universe
+        run: |
+          install.packages(
+            "cmdstanr",
+            repos = c("https://stan-dev.r-universe.dev",
+                      "https://cloud.r-project.org")
+          )
+        shell: Rscript {0}
+
       - name: Install R package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            any::cmdstanr
             any::posterior
             any::loo
             any::readabs
@@ -42,7 +52,6 @@ jobs:
             any::tidyr
             any::ggplot2
             any::jsonlite
-          extra-repositories: 'https://stan-dev.r-universe.dev'
 
       - name: Cache CmdStan install
         id: cache-cmdstan
