@@ -107,9 +107,6 @@ html <- sprintf('<!doctype html>
     <tr><td>GDP(P) production-based</td> <td><strong>%+.2f%%</strong></td></tr>
   </table>
 
-  <h2>Historical estimate</h2>
-  <img src="chart_latent.png" alt="Latent GDP growth vs headline, 1960-present">
-
   <h2>Recent quarters (post-2022)</h2>
   <img src="chart_recent.png" alt="Latent GDP growth vs three measures, post-2022">
 
@@ -126,6 +123,9 @@ html <- sprintf('<!doctype html>
   <p>Data: ABS Cat. 5206.0 Table 24 (Selected Analytical Series),
   seasonally adjusted, chain volume measures. The page is rebuilt
   automatically after each quarterly release.</p>
+
+  <h3>Historical estimate, 1960-present</h3>
+  <img src="chart_latent.png" alt="Latent GDP growth vs headline, 1960-present">
 
   <h3>Downloads</h3>
   <ul>
