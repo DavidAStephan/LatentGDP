@@ -7,6 +7,8 @@ suppressPackageStartupMessages({
   library(posterior)
 })
 
+dir.create("output", showWarnings = FALSE, recursive = TRUE)
+
 gdp_growth <- readRDS("data/processed/gdp_growth.rds")
 
 stan_data <- list(

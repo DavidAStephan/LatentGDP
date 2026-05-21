@@ -4,6 +4,9 @@ suppressPackageStartupMessages({
   library(tidyr)
 })
 
+dir.create("data/raw",       showWarnings = FALSE, recursive = TRUE)
+dir.create("data/processed", showWarnings = FALSE, recursive = TRUE)
+
 # ABS Cat. 5206.0:
 #   Table 24 = Selected Analytical Series (has GDP-E/I/P chain volume measures)
 #   Table 1  = Key Aggregates (has Hours worked: Index for the 4th signal in m8)
