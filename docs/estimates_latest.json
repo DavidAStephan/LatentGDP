@@ -1,0 +1,17 @@
+{
+  "quarter": "2025 Q4",
+  "date": "2025-12-01",
+  "mu_median": 3.15,
+  "mu_q05": 2.51,
+  "mu_q95": 3.79,
+  "headline_mean": 3.16,
+  "observed": {
+    "g_E": 3.18,
+    "g_I": 3.14,
+    "g_P": 3.15
+  },
+  "variance_ratio_vs_headline": 0.694,
+  "units": "annualised quarterly growth, % (400 x dlog of chain volume measures)",
+  "model": "m9: structural Sigma (Cov(eps_P, .) = 0) + stochastic volatility",
+  "data_source": "ABS 5206.0 Table 24, seasonally adjusted, chain volume measures"
+}

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Latent Australian GDP growth</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+           max-width: 880px; margin: 2rem auto; padding: 0 1rem; color: #222;
+           line-height: 1.5; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .headline { font-size: 3rem; font-weight: 600; color: #1b9e77; margin: 0; }
+    .ci { color: #666; font-size: 1.1rem; }
+    .meta { color: #888; font-size: 0.9rem; margin-top: 0.5rem; }
+    .card { background: #f7f7f7; padding: 1.2rem 1.5rem;
+            border-radius: 8px; margin: 1rem 0; }
+    table { border-collapse: collapse; margin: 0.5rem 0; }
+    td { padding: 0.2rem 0.6rem 0.2rem 0; }
+    td:first-child { color: #666; }
+    img { max-width: 100%; height: auto; display: block; margin: 1rem 0; }
+    code { background: #eee; padding: 0.1rem 0.3rem; border-radius: 3px; }
+    a { color: #1f6feb; }
+    footer { color: #888; font-size: 0.85rem; margin-top: 2rem;
+             border-top: 1px solid #eee; padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Latent Australian GDP growth, 2025 Q4</h1>
+  <div class="card">
+    <p class="headline">+3.15%</p>
+    <p class="ci">90% credible interval: [+2.51, +3.79] (annualised quarterly growth)</p>
+    <p class="meta">Headline (mean of E, I, P): +3.16%. Latent series variance is 69% of headline variance across the full sample.</p>
+  </div>
+
+  <h2>Observed measures for 2025 Q4</h2>
+  <table>
+    <tr><td>GDP(E) expenditure-based</td><td><strong>+3.18%</strong></td></tr>
+    <tr><td>GDP(I) income-based</td>     <td><strong>+3.14%</strong></td></tr>
+    <tr><td>GDP(P) production-based</td> <td><strong>+3.15%</strong></td></tr>
+  </table>
+
+  <h2>Historical estimate</h2>
+  <img src="chart_latent.png" alt="Latent GDP growth vs headline, 1960-present">
+
+  <h2>Last six years</h2>
+  <img src="chart_recent.png" alt="Latent GDP growth vs three measures, recent">
+
+  <h2>About</h2>
+  <p>This page publishes a Bayesian state-space estimate of Australian
+  quarterly GDP growth that filters measurement error out of the three
+  independent ABS measures (Expenditure, Income, Production-based GDP).
+  The model is m9 from <a href="https://github.com/davidstephan/LatentGDP">this
+  repo</a>: an AR(1) latent state with stochastic volatility on the
+  measurement-error variances and a construction-based zero restriction
+  on the Production-side error covariance. Background: RBA RDP 2014-12
+  (Rees, Lancaster &amp; Finlay).</p>
+
+  <p>Data: ABS Cat. 5206.0 Table 24 (Selected Analytical Series),
+  seasonally adjusted, chain volume measures. The page is rebuilt
+  automatically after each quarterly release.</p>
+
+  <h3>Downloads</h3>
+  <ul>
+    <li><a href="estimates.csv">estimates.csv</a> - full quarterly time series with 90% CI</li>
+    <li><a href="estimates_latest.json">estimates_latest.json</a> - latest quarter headline</li>
+    <li><a href="diagnostics.json">diagnostics.json</a> - sampler diagnostics for the latest fit</li>
+  </ul>
+
+  <footer>
+    Last updated 2026-05-21 09:21:58 UTC. CmdStan 2.39.0. 4 divergences out of 8000 draws.
+    Sample 1959-12-01 to 2025-12-01 (T = 265 quarters).
+  </footer>
+</body>
+</html>
+

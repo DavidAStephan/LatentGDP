@@ -1,0 +1,96 @@
+name: Recompute latent GDP estimate
+
+on:
+  schedule:
+    # ABS 5206.0 publishes ~11:30 Sydney on the first Wed of Mar/Jun/Sep/Dec.
+    # We run every Wednesday at 02:00 UTC (12:00 Sydney AEST / 13:00 AEDT) -
+    # cheap to re-run, no-op commit if estimates unchanged.
+    - cron: '0 2 * * 3'
+  workflow_dispatch: {}    # manual trigger from the UI
+
+permissions:
+  contents: write          # to commit docs/ updates back to main
+  pages: write             # to deploy GitHub Pages
+  id-token: write          # required by deploy-pages
+
+concurrency:
+  group: latentgdp-recompute
+  cancel-in-progress: false
+
+jobs:
+  recompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.4'
+          use-public-rspm: true
+
+      - name: Install R package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::cmdstanr
+            any::posterior
+            any::loo
+            any::readabs
+            any::dplyr
+            any::tidyr
+            any::ggplot2
+            any::jsonlite
+          extra-repositories: 'https://stan-dev.r-universe.dev'
+
+      - name: Cache CmdStan install
+        id: cache-cmdstan
+        uses: actions/cache@v4
+        with:
+          path: ~/.cmdstan
+          key: cmdstan-2.39.0-${{ runner.os }}
+
+      - name: Install CmdStan if cache miss
+        if: steps.cache-cmdstan.outputs.cache-hit != 'true'
+        run: |
+          Rscript -e 'cmdstanr::check_cmdstan_toolchain(fix = TRUE); cmdstanr::install_cmdstan(version = "2.39.0", cores = 2)'
+
+      - name: Fetch latest ABS data
+        run: Rscript R/01_fetch_data.R
+
+      - name: Fit production model (m9)
+        run: Rscript R/fit_production.R
+
+      - name: Write estimates and build site
+        run: |
+          Rscript R/output_estimate.R
+          Rscript R/build_site.R
+
+      - name: Commit updated docs/ back to main
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          if git diff --staged --quiet; then
+            echo "No changes to docs/ - skipping commit."
+          else
+            DATE=$(date -u +'%Y-%m-%d')
+            git commit -m "auto: refresh estimate ${DATE}"
+            git push
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+  deploy:
+    needs: recompute
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
