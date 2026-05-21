@@ -17,6 +17,11 @@ estimates <- read.csv("docs/estimates.csv") |>
 latest    <- read_json("docs/estimates_latest.json", simplifyVector = TRUE)
 diag      <- read_json("docs/diagnostics.json", simplifyVector = TRUE)
 
+# Y-axis range covering normal recessions / booms but clipping COVID's
+# +/-28% outliers; the annotation flags what's off-scale.
+YLIM <- c(-10, 10)
+covid_note <- "COVID: 2020 Q2 ~-28%, Q3 ~+22% (off-scale)"
+
 # Full sample chart
 p_full <- ggplot(estimates, aes(x = date)) +
   geom_hline(yintercept = 0, colour = "grey80") +
@@ -24,6 +29,9 @@ p_full <- ggplot(estimates, aes(x = date)) +
   geom_ribbon(aes(ymin = mu_q05, ymax = mu_q95),
               alpha = 0.25, fill = "steelblue") +
   geom_line(aes(y = mu_median), colour = "steelblue", linewidth = 0.5) +
+  coord_cartesian(ylim = YLIM) +
+  annotate("text", x = as.Date("2020-12-01"), y = YLIM[2] - 0.5,
+           label = covid_note, size = 3, hjust = 1, colour = "grey40") +
   labs(
     title = "Australian latent GDP growth, 1960-present",
     subtitle = "Model m9 (structural Sigma + SV). Blue = posterior median + 90% CI. Grey = headline.",
@@ -32,8 +40,9 @@ p_full <- ggplot(estimates, aes(x = date)) +
   )
 ggsave("docs/chart_latent.png", p_full, width = 10, height = 5, dpi = 150)
 
-# Recent zoom
-recent <- estimates |> filter(date >= max(date) - 365 * 6)
+# Recent view: skip COVID entirely so the chart shows post-pandemic dynamics
+# at a useful y-scale.
+recent <- estimates |> filter(date >= as.Date("2022-01-01"))
 p_recent <- ggplot(recent, aes(x = date)) +
   geom_hline(yintercept = 0, colour = "grey80") +
   geom_line(aes(y = g_E, colour = "GDP(E)"), alpha = 0.5) +
@@ -46,7 +55,7 @@ p_recent <- ggplot(recent, aes(x = date)) +
     "GDP(E)" = "#d95f02", "GDP(I)" = "#1b9e77", "GDP(P)" = "#7570b3"
   )) +
   labs(
-    title = "Latent GDP vs three ABS measures - last 6 years",
+    title = "Latent GDP vs three ABS measures - post-2022",
     x = NULL, y = "annualised %", colour = NULL
   )
 ggsave("docs/chart_recent.png", p_recent, width = 10, height = 5, dpi = 150)
@@ -101,8 +110,8 @@ html <- sprintf('<!doctype html>
   <h2>Historical estimate</h2>
   <img src="chart_latent.png" alt="Latent GDP growth vs headline, 1960-present">
 
-  <h2>Last six years</h2>
-  <img src="chart_recent.png" alt="Latent GDP growth vs three measures, recent">
+  <h2>Recent quarters (post-2022)</h2>
+  <img src="chart_recent.png" alt="Latent GDP growth vs three measures, post-2022">
 
   <h2>About</h2>
   <p>This page publishes a Bayesian state-space estimate of Australian
