@@ -1,0 +1,34 @@
+# Large fit objects (regenerable from data + Stan code)
+output/fit_*.rds
+output/loos*.rds
+output/loo_compare.rds
+
+# Raw ABS downloads (refetched each run)
+data/raw/
+data/processed/*.rds
+
+# Stan compilation artefacts
+stan/*.exe
+stan/m1_baseline
+stan/m2_ar1
+stan/m3_corr
+stan/m4_sv
+stan/m5_serial
+stan/m6_structural_corr
+stan/m7_covid_scale
+stan/m8_labour
+stan/m9_struct_sv
+stan/m10_labour_sv
+stan/m11_mixed_freq
+
+# R/RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# macOS
+.DS_Store
+
+# Claude Code working directory (not part of the project)
+.claude/
