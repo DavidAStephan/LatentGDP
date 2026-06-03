@@ -1,16 +1,16 @@
 {
-  "quarter": "2025 Q4",
-  "date": "2025-12-01",
-  "mu_median": 3.15,
-  "mu_q05": 2.53,
-  "mu_q95": 3.77,
-  "headline_mean": 3.16,
+  "quarter": "2026 Q1",
+  "date": "2026-03-01",
+  "mu_median": 1.3,
+  "mu_q05": 0.61,
+  "mu_q95": 1.82,
+  "headline_mean": 1.1,
   "observed": {
-    "g_E": 3.18,
-    "g_I": 3.14,
-    "g_P": 3.15
+    "g_E": 0.7,
+    "g_I": 1.22,
+    "g_P": 1.37
   },
-  "variance_ratio_vs_headline": 0.696,
+  "variance_ratio_vs_headline": 0.699,
   "units": "annualised quarterly growth, % (400 x dlog of chain volume measures)",
   "model": "m9: structural Sigma (Cov(eps_P, .) = 0) + stochastic volatility",
   "data_source": "ABS 5206.0 Table 24, seasonally adjusted, chain volume measures"
