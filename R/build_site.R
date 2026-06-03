@@ -18,9 +18,10 @@ latest    <- read_json("docs/estimates_latest.json", simplifyVector = TRUE)
 diag      <- read_json("docs/diagnostics.json", simplifyVector = TRUE)
 
 # Y-axis range covering normal recessions / booms but clipping COVID's
-# +/-28% outliers; the annotation flags what's off-scale.
-YLIM <- c(-10, 10)
-covid_note <- "COVID: 2020 Q2 ~-28%, Q3 ~+22% (off-scale)"
+# outliers; the annotation flags what's off-scale. Units are quarter-on-quarter
+# growth (100 x dlog), so the band is 1/4 of the annualised scale.
+YLIM <- c(-2.5, 2.5)
+covid_note <- "COVID: 2020 Q2 ~-7%, Q3 ~+5.5% (off-scale)"
 
 # Full sample chart
 p_full <- ggplot(estimates, aes(x = date)) +
@@ -35,7 +36,7 @@ p_full <- ggplot(estimates, aes(x = date)) +
   labs(
     title = "Australian latent GDP growth, 1960-present",
     subtitle = "Model m9 (structural Sigma + SV). Blue = posterior median + 90% CI. Grey = headline.",
-    x = NULL, y = "annualised quarterly growth, %",
+    x = NULL, y = "quarter-on-quarter growth, %",
     caption = paste("Data: ABS 5206.0 Table 24. Run:", diag$run_time_utc, "UTC.")
   )
 ggsave("docs/chart_latent.png", p_full, width = 10, height = 5, dpi = 150)
@@ -56,7 +57,7 @@ p_recent <- ggplot(recent, aes(x = date)) +
   )) +
   labs(
     title = "Latent GDP vs three ABS measures - post-2022",
-    x = NULL, y = "annualised %", colour = NULL
+    x = NULL, y = "quarter-on-quarter %", colour = NULL
   )
 ggsave("docs/chart_recent.png", p_recent, width = 10, height = 5, dpi = 150)
 
@@ -100,7 +101,7 @@ html <- sprintf('<!doctype html>
   <h1>Latent Australian GDP growth, %s</h1>
   <div class="card">
     <p class="headline">%s</p>
-    <p class="ci">90%% credible interval: %s (annualised quarterly growth)</p>
+    <p class="ci">90%% credible interval: %s (quarter-on-quarter growth)</p>
     <p class="meta">Headline (mean of E, I, P): %+.2f%%. Latent series variance is %.0f%% of headline variance across the full sample.</p>
   </div>
 
@@ -178,8 +179,12 @@ y<sub>t</sub><sup>P</sup>           | &mu;<sub>t</sub>  ~  N(&mu;<sub>t</sub>, &
   not just COVID.</p>
 
   <h3>Priors</h3>
-  <p>Weakly informative, calibrated to Australian quarterly growth being
-  ~3%% trend with innovations of a few percentage points (annualised):</p>
+  <p>The model is estimated in <em>annualised</em> growth units
+  (400&times;dlog); the figures shown on this page are quarter-on-quarter
+  (100&times;dlog), i.e. the latent state divided by 4. The priors below are
+  therefore stated in the model&apos;s annualised units &ndash; weakly
+  informative, calibrated to Australian quarterly growth being ~3%% trend
+  (annualised) with innovations of a few percentage points:</p>
   <div class="eq">c           ~ N(1.5, 1)
 &rho;           ~ N(0.5, 0.3)    constrained to (-1, 1)
 &tau;           ~ half-N(0, 2)

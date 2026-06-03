@@ -16,6 +16,18 @@ gdp_growth <- readRDS("data/processed/gdp_growth.rds")
 
 mu_draws <- fit$draws("mu", format = "draws_matrix")
 
+# Display convention: report quarter-on-quarter growth (100 x dlog), the
+# standard Australian presentation. The model is fit on annualised growth
+# (400 x dlog); QoQ is exactly that / 4, so rescaling the posterior draws and
+# the observed series here is an exact transform of the same fit - no re-fit.
+# Everything downstream (headline, CIs, latest JSON, variance ratio) derives
+# from these, so it all carries the QoQ scale automatically.
+SCALE <- 0.25
+mu_draws       <- mu_draws * SCALE
+gdp_growth$g_E <- gdp_growth$g_E * SCALE
+gdp_growth$g_I <- gdp_growth$g_I * SCALE
+gdp_growth$g_P <- gdp_growth$g_P * SCALE
+
 estimates <- tibble(
   date          = gdp_growth$date,
   g_E           = gdp_growth$g_E,
@@ -50,7 +62,7 @@ latest_json <- list(
     g_P = round(latest$g_P, 2)
   ),
   variance_ratio_vs_headline = round(mu_var / headline_var, 3),
-  units = "annualised quarterly growth, % (400 x dlog of chain volume measures)",
+  units = "quarter-on-quarter growth, % (100 x dlog of chain volume measures)",
   model = "m9: structural Sigma (Cov(eps_P, .) = 0) + stochastic volatility",
   data_source = "ABS 5206.0 Table 24, seasonally adjusted, chain volume measures"
 )
