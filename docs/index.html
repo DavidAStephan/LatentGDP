@@ -31,16 +31,16 @@
 <body>
   <h1>Latent Australian GDP growth, 2026 Q1</h1>
   <div class="card">
-    <p class="headline">+1.30%</p>
-    <p class="ci">90% credible interval: [+0.61, +1.82] (annualised quarterly growth)</p>
-    <p class="meta">Headline (mean of E, I, P): +1.10%. Latent series variance is 70% of headline variance across the full sample.</p>
+    <p class="headline">+0.32%</p>
+    <p class="ci">90% credible interval: [+0.15, +0.46] (quarter-on-quarter growth)</p>
+    <p class="meta">Headline (mean of E, I, P): +0.27%. Latent series variance is 70% of headline variance across the full sample.</p>
   </div>
 
   <h2>Observed measures for 2026 Q1</h2>
   <table>
-    <tr><td>GDP(E) expenditure-based</td><td><strong>+0.70%</strong></td></tr>
-    <tr><td>GDP(I) income-based</td>     <td><strong>+1.22%</strong></td></tr>
-    <tr><td>GDP(P) production-based</td> <td><strong>+1.37%</strong></td></tr>
+    <tr><td>GDP(E) expenditure-based</td><td><strong>+0.17%</strong></td></tr>
+    <tr><td>GDP(I) income-based</td>     <td><strong>+0.30%</strong></td></tr>
+    <tr><td>GDP(P) production-based</td> <td><strong>+0.34%</strong></td></tr>
   </table>
 
   <h2>Recent quarters (post-2022)</h2>
@@ -110,8 +110,12 @@ y<sub>t</sub><sup>P</sup>           | &mu;<sub>t</sub>  ~  N(&mu;<sub>t</sub>, &
   not just COVID.</p>
 
   <h3>Priors</h3>
-  <p>Weakly informative, calibrated to Australian quarterly growth being
-  ~3% trend with innovations of a few percentage points (annualised):</p>
+  <p>The model is estimated in <em>annualised</em> growth units
+  (400&times;dlog); the figures shown on this page are quarter-on-quarter
+  (100&times;dlog), i.e. the latent state divided by 4. The priors below are
+  therefore stated in the model&apos;s annualised units &ndash; weakly
+  informative, calibrated to Australian quarterly growth being ~3% trend
+  (annualised) with innovations of a few percentage points:</p>
   <div class="eq">c           ~ N(1.5, 1)
 &rho;           ~ N(0.5, 0.3)    constrained to (-1, 1)
 &tau;           ~ half-N(0, 2)
@@ -142,7 +146,7 @@ y<sub>t</sub><sup>P</sup>           | &mu;<sub>t</sub>  ~  N(&mu;<sub>t</sub>, &
   <a href="https://github.com/DavidAStephan/LatentGDP/blob/master/stan/m9_struct_sv.stan">stan/m9_struct_sv.stan</a>.</p>
 
   <footer>
-    Last updated 2026-06-03 09:48:07 UTC. CmdStan 2.39.0. 35 divergences out of 8000 draws.
+    Last updated 2026-06-03 10:47:18 UTC. CmdStan 2.39.0. 35 divergences out of 8000 draws.
     Sample 1959-12-01 to 2026-03-01 (T = 266 quarters).
   </footer>
 </body>
